@@ -8,27 +8,26 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.org.dto.BankDTO;
+import com.org.bank.Bank;
 import com.org.tnx.Transaction;
 
 public class Operations implements Transaction {
 	private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-	private BankDTO dto = null;
 	public Scanner s;
 	public static int count = 0;
 	public String passcode;
 	public static FileInputStream fis;
-	public Properties prop;
 	public double depositAmt;
 	public double wDrawAmt;
 	public static final String ANSI_RESET = "\u001B[0m";
 	public static final String ANSI_YELLOW = "\u001B[31m";
+	public static String dbProperies = "E:/Git/Bank-Operation/src/com/org/properties/db.properties";
+	public static Properties prop = null;
 
 	@Override
 	public double deposit(double amt, String pin) {
-		Properties prop = null;
 		try {
-			prop = readPropertiesData("E:/JavaCoding/BankingOperation/src/com/org/properties/db.properties");
+			prop = readPropertiesData(Bank.dbProperies);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -39,21 +38,24 @@ public class Operations implements Transaction {
 
 	@Override
 	public double withDraw(double amt, String pin) {
-		Properties prop = null;
 		try {
-			prop = readPropertiesData("E:/JavaCoding/BankingOperation/src/com/org/properties/db.properties");
+			prop = readPropertiesData(Bank.dbProperies);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		pin = prop.getProperty(pin);
-		wDrawAmt = Double.parseDouble(pin) - amt;
-		return wDrawAmt;
+		String value = prop.getProperty(pin);
+		if (Double.parseDouble(value) <amt) {
+			LOGGER.log(Level.INFO, "Insufficient Balance...");
+			return Double.parseDouble(value);
+		} else {
+			wDrawAmt = Double.parseDouble(value) - amt;
+			return wDrawAmt;
+		}
 	}
 
 	public static Properties readPropertiesData(String fileName) throws IOException {
-		Properties prop = null;
 		try {
-			fis = new FileInputStream("E:/JavaCoding/BankingOperation/src/com/org/properties/db.properties");
+			fis = new FileInputStream(Bank.dbProperies);
 			prop = new Properties();
 			prop.load(fis);
 		} catch (FileNotFoundException fnfe) {
@@ -71,7 +73,7 @@ public class Operations implements Transaction {
 		} else {
 			passcode = Integer.toString(pin);
 
-			Properties prop = readPropertiesData("E:/JavaCoding/BankingOperation/src/com/org/properties/db.properties");
+			prop = readPropertiesData(Bank.dbProperies);
 			passcode = prop.getProperty(passcode);
 			if (passcode != null) {
 				return "correct";
