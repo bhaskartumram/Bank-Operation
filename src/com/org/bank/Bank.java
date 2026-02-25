@@ -20,11 +20,13 @@ public class Bank {
 	public static int pin;
 	public static String verifyPin;
 	public static String response;
+	public static Properties prop = null;
+	public static String dbProperies = "E:/Git/Bank-Operation/src/com/org/properties/db.properties";
 
 	public static Properties readPropertiesFile(String fileName) throws IOException {
-		Properties prop = null;
+
 		try {
-			FileInputStream fis = new FileInputStream("E:/JavaCoding/BankingOperation/src/db.properties");
+			FileInputStream fis = new FileInputStream(dbProperies);
 			prop = new Properties();
 			prop.load(fis);
 		} catch (FileNotFoundException fnfe) {
@@ -36,7 +38,7 @@ public class Bank {
 	}
 
 	public void DepositOps() throws IOException {
-		Properties prop = Bank.readPropertiesFile("E:/JavaCoding/BankingOperation/src/com/org/properties/db.properties");
+		prop = Bank.readPropertiesFile(Bank.dbProperies);
 		System.out.println("enter amount to deposit");
 		try {
 			amt = s.nextDouble();
@@ -48,30 +50,28 @@ public class Bank {
 
 		totalAmt = amt + Double.parseDouble(prop.getProperty(Integer.toString(pin)));
 		prop.put(Integer.toString(pin), Double.toString(totalAmt));
-		String path = "E:/JavaCoding/BankingOperation/src/com/org/properties/db.properties";
-		FileOutputStream outputStrem = new FileOutputStream(path);
+		FileOutputStream outputStrem = new FileOutputStream(Bank.dbProperies);
 		prop.store(outputStrem, "This is a sample properties file");
 		System.out.println("Properties file created......");
 	}
 
 	public void WithdrawOps() throws IOException {
-		Properties prop = Bank.readPropertiesFile("E:/JavaCoding/BankingOperation/src/com/org/properties/db.properties");
+		prop = Bank.readPropertiesFile(Bank.dbProperies);
 		System.out.println("enter withdraw amount ");
 		try {
 			amt = s.nextDouble();
 		} catch (InputMismatchException ime) {
 			System.out.println("Enter valid input: " + ime.getStackTrace());
 		}
-		if (amt <=0) {
-			LOGGER.log(Level.INFO, "Insufficient Balance...");
+		if (amt <= 0) {
+			LOGGER.log(Level.INFO, "Invalid Amount");
 		} else {
-			System.out.println(new Operations().withDraw(amt, Integer.toString(pin)));
+			double totalAmt = new Operations().withDraw(amt, Integer.toString(pin));
+			prop.put(Integer.toString(pin), Double.toString(totalAmt));
+			FileOutputStream outputStrem = new FileOutputStream(Bank.dbProperies);
+			prop.store(outputStrem, "This is a sample properties file");
+			System.out.println("Properties file created......");
 		}
-		double totalAmt = amt + Double.parseDouble(prop.getProperty(Integer.toString(pin)));
-		prop.put(Integer.toString(pin), Double.toString(totalAmt));
-		String path = "E:/JavaCoding/BankingOperation/src/com/org/properties/db.properties";
-		FileOutputStream outputStrem = new FileOutputStream(path);
-		prop.store(outputStrem, "This is a sample properties file");
 	}
 
 	public void init() {
@@ -84,6 +84,15 @@ public class Bank {
 
 	}
 
+	public static boolean containsInteger(String str) {
+		// The regex ".*\\d.*" matches any string that contains at least one
+		// digit.
+		// \\d represents a digit (0-9). The outer ".*" allows for any
+		// characters
+		// before and after the digit(s).
+		return str != null && str.matches(".*\\d.*");
+	}
+
 	public static void main(String[] args) throws IOException {
 		Bank bankObj = new Bank();
 		bankObj.init();
@@ -92,29 +101,39 @@ public class Bank {
 			if (verifyPin == "correct") {
 				System.out.println("Select Operations");
 				System.out.println("1.Deposit\n2.Withdraw");
-				int input = s.nextInt();
+				int input = 0;
+				try {
+					input = s.nextInt();
+				} catch (java.util.InputMismatchException ime) {
+					LOGGER.log(Level.INFO, "Invalid input");
+					break;
+				}
 				if (input == 1) {
 					bankObj.DepositOps();
 					System.out.println("Do you want to continue Operations? \n1.Yes\n2.No");
-					response=s.next();
-					if(response.equalsIgnoreCase("Yes")){
+					response = s.next();
+					if (response.equals("Yes") || response.equals("yes")) {
 						continue;
-					}
-					else if(response.equalsIgnoreCase("No")){
+					} else if (response.equals("No") || response.equals("no")) {
 						LOGGER.log(Level.INFO, "Thank You");
-						break;	
+						break;
+					}else{
+						LOGGER.log(Level.INFO, "Invalid input");
+						break;
 					}
 
-				} else {
+				} else if (input == 2) {
 					bankObj.WithdrawOps();
 					System.out.println("Do you want to continue Operations? \n1.Yes\n2.No");
-					response=s.next();
-					if(response.equalsIgnoreCase("Yes")){
+					response = s.next();
+					if (containsInteger(response)) {
+						LOGGER.log(Level.INFO, "Invalid input");
+						break;
+					} else if (response.equals("Yes") || response.equals("yes")) {
 						continue;
-					}
-					else if(response.equalsIgnoreCase("No")){
+					} else if (response.equals("No") || response.equals("no")) {
 						LOGGER.log(Level.INFO, "Thank You");
-						break;	
+						break;
 					}
 				}
 			} else if (Operations.count == 3) {
