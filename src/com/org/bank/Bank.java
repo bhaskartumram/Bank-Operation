@@ -70,6 +70,7 @@ public class Bank {
 			prop.put(Integer.toString(pin), Double.toString(totalAmt));
 			FileOutputStream outputStrem = new FileOutputStream(Bank.dbProperies);
 			prop.store(outputStrem, "This is a sample properties file");
+			System.out.println("Properties file created......");
 		}
 	}
 
@@ -111,13 +112,13 @@ public class Bank {
 					bankObj.DepositOps();
 					System.out.println("Do you want to continue Operations? \n1.Yes\n2.No");
 					response = s.next();
-					if (containsInteger(response)) {
-						LOGGER.log(Level.INFO, "Invalid input");
-						break;
-					} else if (response.equalsIgnoreCase("Yes")) {
+					if (response.equals("Yes") || response.equals("yes")) {
 						continue;
-					} else if (response.equalsIgnoreCase("No")) {
+					} else if (response.equals("No") || response.equals("no")) {
 						LOGGER.log(Level.INFO, "Thank You");
+						break;
+					}else{
+						LOGGER.log(Level.INFO, "Invalid input");
 						break;
 					}
 
@@ -125,9 +126,12 @@ public class Bank {
 					bankObj.WithdrawOps();
 					System.out.println("Do you want to continue Operations? \n1.Yes\n2.No");
 					response = s.next();
-					if (response.equalsIgnoreCase("Yes")) {
+					if (containsInteger(response)) {
+						LOGGER.log(Level.INFO, "Invalid input");
+						break;
+					} else if (response.equals("Yes") || response.equals("yes")) {
 						continue;
-					} else if (response.equalsIgnoreCase("No")) {
+					} else if (response.equals("No") || response.equals("no")) {
 						LOGGER.log(Level.INFO, "Thank You");
 						break;
 					}
