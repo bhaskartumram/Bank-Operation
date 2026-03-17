@@ -13,7 +13,7 @@ import com.org.ops.Operations;
 
 public class Bank {
 	private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-	private static Scanner s = new Scanner(System.in);
+	private static Scanner s = null;
 	public double amt;
 	public int passcode;
 	public double totalAmt;
@@ -21,7 +21,7 @@ public class Bank {
 	public static String verifyPin;
 	public static String response;
 	public static Properties prop = null;
-	public static String dbProperies = "E:/Git/Bank-Operation/src/com/org/properties/db.properties";
+	public static String dbProperies = "D:/git test/git workspace/Bank-Operation/src/com/org/properties/db.properties";
 
 	public static Properties readPropertiesFile(String fileName) throws IOException {
 
@@ -41,6 +41,7 @@ public class Bank {
 		prop = Bank.readPropertiesFile(Bank.dbProperies);
 		System.out.println("enter amount to deposit");
 		try {
+			s = new Scanner(System.in);
 			amt = s.nextDouble();
 		} catch (InputMismatchException ime) {
 			System.out.println("Enter valid input: " + ime.getStackTrace());
@@ -59,6 +60,7 @@ public class Bank {
 		prop = Bank.readPropertiesFile(Bank.dbProperies);
 		System.out.println("enter withdraw amount ");
 		try {
+			s = new Scanner(System.in);
 			amt = s.nextDouble();
 		} catch (InputMismatchException ime) {
 			System.out.println("Enter valid input: " + ime.getStackTrace());
@@ -77,6 +79,7 @@ public class Bank {
 	public void init() {
 		System.out.println("Enter pin: ");
 		try {
+			s = new Scanner(System.in);
 			pin = s.nextInt();
 		} catch (InputMismatchException ime) {
 			System.out.println("Enter digit value: " + ime.getMessage());
@@ -103,6 +106,7 @@ public class Bank {
 				System.out.println("1.Deposit\n2.Withdraw");
 				int input = 0;
 				try {
+					s = new Scanner(System.in);
 					input = s.nextInt();
 				} catch (java.util.InputMismatchException ime) {
 					LOGGER.log(Level.INFO, "Invalid input");
@@ -117,7 +121,7 @@ public class Bank {
 					} else if (response.equals("No") || response.equals("no")) {
 						LOGGER.log(Level.INFO, "Thank You");
 						break;
-					}else{
+					} else {
 						LOGGER.log(Level.INFO, "Invalid input");
 						break;
 					}
@@ -125,6 +129,7 @@ public class Bank {
 				} else if (input == 2) {
 					bankObj.WithdrawOps();
 					System.out.println("Do you want to continue Operations? \n1.Yes\n2.No");
+					s = new Scanner(System.in);
 					response = s.next();
 					if (containsInteger(response)) {
 						LOGGER.log(Level.INFO, "Invalid input");
@@ -135,6 +140,8 @@ public class Bank {
 						LOGGER.log(Level.INFO, "Thank You");
 						break;
 					}
+				} else if (input >= 3) {
+					 System.out.println("Invalid input\nTry again");
 				}
 			} else if (Operations.count == 3) {
 				LOGGER.log(Level.INFO, "Try after some time");
@@ -144,5 +151,6 @@ public class Bank {
 				verifyPin = new Operations().verifyPin(pin);
 			}
 		}
+		s.close();
 	}
 }

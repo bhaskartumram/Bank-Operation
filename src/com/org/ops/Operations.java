@@ -4,16 +4,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import com.org.bank.Bank;
 import com.org.tnx.Transaction;
 
 public class Operations implements Transaction {
 	private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-	public Scanner s;
 	public static int count = 0;
 	public String passcode;
 	public static FileInputStream fis;
@@ -21,7 +18,6 @@ public class Operations implements Transaction {
 	public double wDrawAmt;
 	public static final String ANSI_RESET = "\u001B[0m";
 	public static final String ANSI_YELLOW = "\u001B[31m";
-	public static String dbProperies = "E:/Git/Bank-Operation/src/com/org/properties/db.properties";
 	public static Properties prop = null;
 
 	@Override
